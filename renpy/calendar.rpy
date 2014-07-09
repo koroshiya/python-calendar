@@ -115,6 +115,9 @@ init python:
     month = 8 #Current month. 1 = January, 12 = December
     oldmonth = 8 #Previous month.
     #Only useful when going from one month to the next.
+    year = False #Set to either false or a numeric value. eg. 2012.
+    #If not False, the year will be displayed below the current month.
+    #The year will also increment/decrement accordingly.
 
     ###
     #Boolean variables
@@ -235,6 +238,7 @@ init python:
         global nextMonth
         global oldmonth
         global dayofweek
+        global year
 
         curmove = 0
         if direction > 0:
@@ -245,7 +249,12 @@ init python:
                 dayofmonth = 0
                 nextMonth = True
                 oldmonth = month
-                month = 0 if month == 11 else month + 1
+                if month == 11:
+                    if year:
+                        year += 1
+                    month = 0
+                else:
+                    month += 1
         else:
             dayofweek -= 1
             print dayofmonth, month
@@ -253,7 +262,11 @@ init python:
                 nextMonth = True
                 oldmonth = month
                 month = 11 if month == 0 else month - 1
-                dayofmonth = months[11][1] if oldmonth == 0 else months[month][1]
+                if oldmonth == 0:
+                    dayofmonth = months[11][1]
+                    year -= 1
+                else:
+                    dayofmonth = months[month][1]
             
             dayofmonth -= 1
 
@@ -261,8 +274,9 @@ init python:
         global dayButton
         global dayFrame
         global dayofmonth
+        global year
 
-        if boolStart and direction < 0:
+        if boolStart:
             dayofmonth -= 1
 
         wScale = 1
@@ -271,6 +285,8 @@ init python:
         #if config.screen_height != 600:
         #    pass
         ui.text(months[month][0], xpos=50, ypos=monthPos, size=math.floor(42*wScale))
+        if year:
+            ui.text(str(year), xpos=50, ypos=(monthPos + 42 * wScale), size=math.floor(36*wScale))
         for i in xrange(-3, 7): #Display 7 days, starting 3 days ago
             relDay = getRelativeDay(i, boolStart)
             fWidth = 7 if relDay < 10 else 3
