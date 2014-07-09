@@ -122,9 +122,13 @@ init python:
     ###
     #Boolean variables
     #
-    #None of these should be edited manually.
+    #nextMonth should NOT be modified manually.
+    #
     ###
     nextMonth = False #True when we're about to change months.
+    displayFullName = True #If True, display the full name of a week day
+    #rather than the abbreviation.
+    #eg. Tuesday rather than Tue
 
     ###
     #Size Variables
@@ -297,7 +301,7 @@ init python:
             nxPos -= (int)(wScale * 40)
             nyPos -= (int)(wScale * 60)
             cDay = getRelativeWeekDay(i, boolStart)
-            ui.text(cDay[1], xpos=nxPos, ypos=nyPos, size=math.floor(wScale * 18))
+            ui.text(cDay[0 if displayFullName else 1], xpos=nxPos, ypos=nyPos, size=math.floor(wScale * 18))
             posX += imgSize
         framepos = (size[0] / 2 - imgSize / 2 - imgSize / 25, posY - 3)
         ui.image(dayFrame, xpos=framepos[0], ypos=framepos[1])
