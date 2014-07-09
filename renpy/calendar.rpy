@@ -179,11 +179,11 @@ init python:
         global months
 
         if boolStart:
-            start = dayofmonth - 1
+            start = dayofmonth
         else:
-            start = dayofmonth - 3 if direction > 0 else dayofmonth + 1
+            start = dayofmonth - 1 if direction > 0 else dayofmonth + 1
         newVal = start + mv
-        
+
         if newVal < 1:
             newVal = months[11][1] + newVal if month == 0 else months[month - 1][1] + newVal
         elif newVal > months[month][1]:
@@ -201,13 +201,12 @@ init python:
     def getRelativeWeekDay(mv, boolStart):
         global dayofweek
         global days
-
-        newDay = dayofweek + mv
-        if not boolStart:
-            if direction > 0:
-                newDay -= 1
-            else:
-                newDay += 1
+        global direction
+        
+        if boolStart:
+            newDay = dayofweek + mv -1
+        else:
+            newDay = dayofweek + mv - (2 if direction > 0 else 0)
 
         if newDay > 6:
             while newDay > 6:
@@ -238,26 +237,31 @@ init python:
         curmove = 0
         if direction > 0:
             dayofweek += 1
-            if dayofmonth < months[month][1]:
+            if dayofmonth < months[month][1] - 1:
                 dayofmonth += 1
             else:
-                dayofmonth = 1
+                dayofmonth = 0
                 nextMonth = True
                 oldmonth = month
                 month = 0 if month == 11 else month + 1
         else:
             dayofweek -= 1
-            if dayofmonth == 1:
+            print dayofmonth, month
+            if dayofmonth == 0:
                 nextMonth = True
                 oldmonth = month
                 month = 11 if month == 0 else month - 1
                 dayofmonth = months[11][1] if oldmonth == 0 else months[month][1]
-            else:
-                dayofmonth -= 1
+            
+            dayofmonth -= 1
 
     def displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, boolStart):
         global dayButton
         global dayFrame
+        global dayofmonth
+
+        if boolStart and direction < 0:
+            dayofmonth -= 1
 
         ui.text(months[month][0], xpos=50, ypos=monthPos, size=42)
         for i in xrange(-3, 7): #Display 7 days, starting 3 days ago
@@ -308,23 +312,6 @@ label calendar:
     python:
         oldmonth = month
         move(direction)
-
-        if direction > 0:
-            if dayofmonth < months[month][1]:
-                dayofmonth += 1
-            else:
-                dayofmonth = 1
-                nextMonth = True
-                oldmonth = month
-                month = 0 if month == 1 else month + 1
-        else:
-            if dayofmonth == 1:
-                nextMonth = True
-                oldmonth = month
-                month = 11 if month == 0 else month - 1
-                dayofmonth = months[11][1] if oldmonth == 0 else months[month][1]
-            else:
-                dayofmonth -= 1
 
         curmove = 0
         moved = 0
