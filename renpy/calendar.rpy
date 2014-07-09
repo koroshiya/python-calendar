@@ -125,8 +125,10 @@ init python:
 
     ###
     #Size Variables
+    #
+    #This shouldn't be changed. It currently maps to the renpy size setting.
     ###
-    size = (800, 600)
+    size = (config.screen_width, config.screen_height)
 
     ###
     #Movement Variables
@@ -157,8 +159,8 @@ init python:
     #Both of these values can be changed
     ###
 
-    dayButton = "gray.png"
-    dayFrame = "onyx.png"
+    dayButton = str(size[0])+"x"+str(size[1])+"/gray.png"
+    dayFrame = str(size[0])+"x"+str(size[1])+"/onyx.png"
 
     ###
     #getRelativeDay(int mv, boolean boolStart)
@@ -189,7 +191,7 @@ init python:
         elif newVal > months[month][1]:
             newVal -= months[month][1]
 
-        return str(newVal)
+        return newVal
 
     ###
     #getRelativeWeekDay(int mv)
@@ -263,16 +265,23 @@ init python:
         if boolStart and direction < 0:
             dayofmonth -= 1
 
-        ui.text(months[month][0], xpos=50, ypos=monthPos, size=42)
+        wScale = 1
+        if config.screen_width != 800:
+            wScale = float(config.screen_width) / float(800)
+        #if config.screen_height != 600:
+        #    pass
+        ui.text(months[month][0], xpos=50, ypos=monthPos, size=math.floor(42*wScale))
         for i in xrange(-3, 7): #Display 7 days, starting 3 days ago
-            nxPos = posX + (scalesize / 3)
-            nyPos = posY + (scalesize / 3)
+            relDay = getRelativeDay(i, boolStart)
+            fWidth = 7 if relDay < 10 else 3
+            nxPos = (int)(posX + (scalesize / 3) + math.floor(wScale * fWidth))
+            nyPos = (int)(posY + (scalesize / 3))
             ui.image(dayButton, xpos=posX, ypos=posY)
-            ui.text(getRelativeDay(i, boolStart), xpos=nxPos, ypos=nyPos, size=28)
-            nxPos -= 40
-            nyPos -= 60
+            ui.text(str(relDay), xpos=nxPos, ypos=nyPos, size=math.floor(28*wScale))
+            nxPos -= (int)(wScale * 40)
+            nyPos -= (int)(wScale * 60)
             cDay = getRelativeWeekDay(i, boolStart)
-            ui.text(cDay[1], xpos=nxPos, ypos=nyPos, size=18)
+            ui.text(cDay[1], xpos=nxPos, ypos=nyPos, size=math.floor(wScale * 18))
             posX += imgSize
         framepos = (size[0] / 2 - imgSize / 2 - imgSize / 25, posY - 3)
         ui.image(dayFrame, xpos=framepos[0], ypos=framepos[1])
@@ -280,7 +289,8 @@ init python:
 ###
 #Background Image
 ###
-image bg Calendar = "HomeStreet_01.png"
+#image bg Calendar = "bg/Personal/HomeStreet_01.png"
+image bg Calendar = str(size[0])+"x"+str(size[1])+"/HomeStreet_01.png"
 
 label calendar:
 
