@@ -152,11 +152,20 @@ init python:
     intDelay = 1.5 #Time to keep showing calendar for after movement
 
     ###
+    #Image resources
+    #
+    #Both of these values can be changed
+    ###
+
+    dayButton = "gray.png"
+    dayFrame = "onyx.png"
+
+    ###
     #getRelativeDay(int mv, boolean boolStart)
     #@param mv How many days forward or back from the current date
-    #			to get the day of. eg. -1 = yesterday.
+    #           to get the day of. eg. -1 = yesterday.
     #@param boolStart True if being run for the first time.
-    #			Not tested if necessary outside of pygame.
+    #           Not tested if necessary outside of pygame.
     #
     #This function gets a day of the month relative to the
     #current day, then returns the number as a string.
@@ -172,8 +181,9 @@ init python:
         if boolStart:
             start = dayofmonth - 1
         else:
-            start = dayofmonth - 2 if direction > 0 else dayofmonth
+            start = dayofmonth - 3 if direction > 0 else dayofmonth - 1
         newVal = start + mv
+        
         if newVal < 1:
             newVal = months[11][1] + newVal if month == 0 else months[month - 1][1] + newVal
         elif newVal > months[month][1]:
@@ -188,16 +198,20 @@ init python:
     #Does the same, except returns name of the week day
     #instead of the number of the day in the month.
     ###
-    def getRelativeWeekDay(mv):
+    def getRelativeWeekDay(mv, boolStart):
         global dayofweek
         global days
 
         newDay = dayofweek + mv
+        if not boolStart:
+            newDay -= 1
 
         if newDay > 6:
-            newDay -= 7
+            while newDay > 6:
+                newDay -= 7
         elif newDay < 0:
-            newDay += 7
+            while newDay < 0:
+                newDay += 7
 
         return days[newDay]
 
@@ -238,6 +252,24 @@ init python:
             else:
                 dayofmonth -= 1
 
+    def displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, boolStart):
+        global dayButton
+        global dayFrame
+
+        ui.text(months[month][0], xpos=50, ypos=monthPos, size=42)
+        for i in xrange(-3, 7): #Display 7 days, starting 3 days ago
+            nxPos = posX + (scalesize / 3)
+            nyPos = posY + (scalesize / 3)
+            ui.image(dayButton, xpos=posX, ypos=posY)
+            ui.text(getRelativeDay(i, boolStart), xpos=nxPos, ypos=nyPos, size=28)
+            nxPos -= 40
+            nyPos -= 60
+            cDay = getRelativeWeekDay(i, boolStart)
+            ui.text(cDay[1], xpos=nxPos, ypos=nyPos, size=18)
+            posX += imgSize
+        framepos = (size[0] / 2 - imgSize / 2 - imgSize / 25, posY - 3)
+        ui.image(dayFrame, xpos=framepos[0], ypos=framepos[1])
+
 ###
 #Background Image
 ###
@@ -260,20 +292,7 @@ label calendar:
         posX = baseX
         posY = size[1] / 2 - 96 / 2
 
-        ui.text(months[month][0], xpos=50, ypos=monthPos, size=42)
-
-        for i in xrange(-3, 7): #Display 7 days, starting 3 days ago
-            nxPos = posX + (scalesize / 3)
-            nyPos = posY + (scalesize / 3)
-            ui.image("gray.png", xpos=posX, ypos=posY)
-            ui.text(getRelativeDay(i, True), xpos=nxPos, ypos=nyPos, size=28)
-            nxPos -= 40
-            nyPos -= 60
-            cDay = getRelativeWeekDay(i)
-            ui.text(cDay[1], xpos=nxPos, ypos=nyPos, size=18)
-            posX += imgSize
-        framepos = (size[0] / 2 - imgSize / 2 - imgSize / 25, posY - 3)
-        ui.image("onyx.png", xpos=framepos[0], ypos=framepos[1])
+        displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, True)
 
     if direction == 0: 
         #If we aren't moving forward or back, 
@@ -320,23 +339,11 @@ label calendar:
                 lastMove = True
             #TODO: add animation?
             month = oldmonth if not monthHalf else month
-            ui.text(months[month][0], xpos=50, ypos=monthPos, size=42)
 
             posX = baseX - curmove
 
-            for i in xrange(-3, 7):
-                nxPos = posX + (scalesize / 3)
-                nyPos = posY + (scalesize / 3)
-                ui.image("gray.png", xpos=posX, ypos=posY)
-                ui.text(getRelativeDay(i, True), xpos=nxPos, ypos=nyPos, size=24)
-                nxPos -= 40
-                nyPos -= 60
-                cDay = getRelativeWeekDay(i)
-                ui.text(cDay[1], xpos=nxPos, ypos=nyPos, size=18)
-                posX += imgSize
-            #screen.blit(frame, framepos)
-            framepos = (size[0] / 2 - imgSize / 2 - imgSize / 25, posY - 3)
-            ui.image("onyx.png", xpos=framepos[0], ypos=framepos[1])
+            displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, False)
+
             if lastMove:
                 lastMove = False
                 if not math.fabs(curmove) >= imgSize * math.fabs(direction):
@@ -349,24 +356,10 @@ label calendar:
                     nextMonth = False
                     oldmonth = month
 
-            renpy.pause(0.01)
-            #1/100 of a second. Emulating 100hz refresh rate animation
+            renpy.pause(1/60)
 
         #Finished looping. Display end result for intDelay seconds.
-        ui.text(months[month][0], xpos=50, ypos=monthPos, size=42)
-        posX = baseX - curmove
-        for i in xrange(-3, 7):
-            nxPos = posX + (scalesize / 3)
-            nyPos = posY + (scalesize / 3)
-            ui.image("gray.png", xpos=posX, ypos=posY)
-            ui.text(getRelativeDay(i, True), xpos=nxPos, ypos=nyPos, size=24)
-            nxPos -= 40
-            nyPos -= 60
-            cDay = getRelativeWeekDay(i)
-            ui.text(cDay[1], xpos=nxPos, ypos=nyPos, size=18)
-            posX += imgSize
-        framepos = (size[0] / 2 - imgSize / 2 - imgSize / 25, posY - 3)
-        ui.image("onyx.png", xpos=framepos[0], ypos=framepos[1])
+        displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, False)
 
         renpy.pause(intDelay)
 
