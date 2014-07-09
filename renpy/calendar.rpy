@@ -123,12 +123,14 @@ init python:
     #Boolean variables
     #
     #nextMonth should NOT be modified manually.
-    #
+    #The others can all be set manually.
     ###
     nextMonth = False #True when we're about to change months.
     displayFullName = True #If True, display the full name of a week day
     #rather than the abbreviation.
     #eg. Tuesday rather than Tue
+    displayTime = "9:00 PM" #If False, don't display. Otherwise display value.
+    displayWeather = "Sunny" #If False, don't display. Otherwise display value.
 
     ###
     #Size Variables
@@ -274,7 +276,7 @@ init python:
             
             dayofmonth -= 1
 
-    def displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, boolStart):
+    def displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, boolStart, boolEnd=False):
         global dayButton
         global dayFrame
         global dayofmonth
@@ -291,6 +293,18 @@ init python:
         ui.text(months[month][0], xpos=50, ypos=monthPos, size=math.floor(42*wScale))
         if year:
             ui.text(str(year), xpos=50, ypos=(monthPos + 42 * wScale), size=math.floor(36*wScale))
+        if boolEnd:
+            if displayTime:
+                ui.text(displayTime, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale), size=math.floor(36*wScale), opacity=0.5)
+            if displayWeather:
+                ui.text(displayWeather, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 42 * wScale), size=math.floor(24*wScale))
+        elif math.fabs(direction) == 1:
+            curX = imgSize + (baseX - posX if direction == 0 else posX - baseX)
+            print "baseX", baseX, "posX", posX
+            if displayTime:
+                ui.text(displayTime, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale - curX), size=math.floor(36*wScale), opacity=0.5)
+            if displayWeather:
+                ui.text(displayWeather, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 42 * wScale - curX), size=math.floor(24*wScale))
         for i in xrange(-3, 7): #Display 7 days, starting 3 days ago
             relDay = getRelativeDay(i, boolStart)
             fWidth = 7 if relDay < 10 else 3
@@ -379,7 +393,7 @@ label calendar:
             renpy.pause(1/60)
 
         #Finished looping. Display end result for intDelay seconds.
-        displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, False)
+        displayDays(posX, posY, scalesize, imgSize, size, monthPos, months, month, False, boolEnd=True)
 
         renpy.pause(intDelay)
 
