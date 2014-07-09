@@ -263,7 +263,6 @@ init python:
                     month += 1
         else:
             dayofweek -= 1
-            print dayofmonth, month
             if dayofmonth == 0:
                 nextMonth = True
                 oldmonth = month
@@ -299,8 +298,7 @@ init python:
             if displayWeather:
                 ui.text(displayWeather, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 42 * wScale), size=math.floor(24*wScale))
         elif math.fabs(direction) == 1:
-            curX = imgSize + (baseX - posX if direction == 0 else posX - baseX)
-            print "baseX", baseX, "posX", posX
+            curX = imgSize + (baseX - posX if direction == -1 else posX - baseX)
             if displayTime:
                 ui.text(displayTime, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale - curX), size=math.floor(36*wScale), opacity=0.5)
             if displayWeather:
