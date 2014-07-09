@@ -181,7 +181,7 @@ init python:
         if boolStart:
             start = dayofmonth - 1
         else:
-            start = dayofmonth - 3 if direction > 0 else dayofmonth - 1
+            start = dayofmonth - 3 if direction > 0 else dayofmonth + 1
         newVal = start + mv
         
         if newVal < 1:
@@ -204,7 +204,10 @@ init python:
 
         newDay = dayofweek + mv
         if not boolStart:
-            newDay -= 1
+            if direction > 0:
+                newDay -= 1
+            else:
+                newDay += 1
 
         if newDay > 6:
             while newDay > 6:
