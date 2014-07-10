@@ -118,6 +118,7 @@ init python:
     year = False #Set to either false or a numeric value. eg. 2012.
     #If not False, the year will be displayed below the current month.
     #The year will also increment/decrement accordingly.
+    oldyear = False #Will be set automatically as year is changed
 
     ###
     #Boolean variables
@@ -126,6 +127,7 @@ init python:
     #The others can all be set manually.
     ###
     nextMonth = False #True when we're about to change months.
+    nextYear = False #True when we're about to change years
     displayFullName = True #If True, display the full name of a week day
     #rather than the abbreviation.
     #eg. Tuesday rather than Tue
@@ -242,13 +244,16 @@ init python:
         global month
         global dayofmonth
         global nextMonth
+        global nextYear
         global oldmonth
+        global oldyear
         global dayofweek
         global year
 
         nextMonth = False
+        nextYear = False
         curmove = 0
-        
+
         if direction > 0:
             dayofweek += 1
             if dayofmonth < months[month][1] - 1:
@@ -257,9 +262,11 @@ init python:
                 dayofmonth = 0
                 nextMonth = True
                 oldmonth = month
+                oldyear = year
                 if month == 11:
                     if year:
                         year += 1
+                        nextYear = True
                     month = 0
                 else:
                     month += 1
@@ -268,10 +275,12 @@ init python:
             if dayofmonth == 0:
                 nextMonth = True
                 oldmonth = month
+                oldyear = year
                 month = 11 if month == 0 else month - 1
                 if oldmonth == 0:
                     dayofmonth = months[11][1]
                     year -= 1
+                    nextYear = True
                 else:
                     dayofmonth = months[month][1]
             
@@ -283,7 +292,9 @@ init python:
         global dayofmonth
         global year
         global nextMonth
+        global nextYear
         global oldmonth
+        global oldyear
 
         if boolStart:
             dayofmonth -= 1
@@ -296,16 +307,26 @@ init python:
         if nextMonth:
             curX = ((imgSize + (baseX - posX if direction < 0 else posX - baseX))) / 5 - 15
             print "curX", str(curX)
-            cmonth = oldmonth if curX > 0 else month
+            if curX > 0:
+                cmonth = oldmonth
+                cyear = oldyear
+            else:
+                cmonth = month
+                cyear = year
             curX = math.fabs(curX)
             if curX > 15:
                 curX = 15
             curX = "%x" % curX
             ui.text("{color=#fff"+curX+"}"+months[cmonth][0]+"{/color}", xpos=50, ypos=monthPos, size=math.floor(42*wScale))
+            if year:
+                if nextYear:
+                    ui.text("{color=#fff"+curX+"}"+str(cyear)+"{/color}", xpos=50, ypos=(monthPos + 42 * wScale), size=math.floor(36*wScale))
+                else:
+                    ui.text(str(year), xpos=50, ypos=(monthPos + 42 * wScale), size=math.floor(36*wScale))
         else:
             ui.text(months[month][0], xpos=50, ypos=monthPos, size=math.floor(42*wScale))
-        if year:
-            ui.text(str(year), xpos=50, ypos=(monthPos + 42 * wScale), size=math.floor(36*wScale))
+            if year:
+                ui.text(str(year), xpos=50, ypos=(monthPos + 42 * wScale), size=math.floor(36*wScale))
         if boolEnd:
             if displayTime:
                 ui.text(displayTime, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale), size=math.floor(36*wScale))
@@ -351,6 +372,7 @@ label calendar:
         monthPos = 25 #Y position (in px) of month label to display
         month -= 1 #So users can set month as 1-12 instead of 0-11
         oldmonth = month
+        oldyear = year
         newsize = size[1] / 4 #One quarter of window width
         scalesize = int(math.floor(newsize * 2 / 3)) #One sixth of window width
         
