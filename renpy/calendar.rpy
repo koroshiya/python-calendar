@@ -246,7 +246,9 @@ init python:
         global dayofweek
         global year
 
+        nextMonth = False
         curmove = 0
+        
         if direction > 0:
             dayofweek += 1
             if dayofmonth < months[month][1] - 1:
@@ -280,6 +282,8 @@ init python:
         global dayFrame
         global dayofmonth
         global year
+        global nextMonth
+        global oldmonth
 
         if boolStart:
             dayofmonth -= 1
@@ -289,20 +293,33 @@ init python:
             wScale = float(config.screen_width) / float(800)
         #if config.screen_height != 600:
         #    pass
-        ui.text(months[month][0], xpos=50, ypos=monthPos, size=math.floor(42*wScale))
+        if nextMonth:
+            curX = ((imgSize + (baseX - posX if direction < 0 else posX - baseX))) / 5 - 15
+            print "curX", str(curX)
+            cmonth = oldmonth if curX > 0 else month
+            curX = math.fabs(curX)
+            if curX > 15:
+                curX = 15
+            curX = "%x" % curX
+            ui.text("{color=#fff"+curX+"}"+months[cmonth][0]+"{/color}", xpos=50, ypos=monthPos, size=math.floor(42*wScale))
+        else:
+            ui.text(months[month][0], xpos=50, ypos=monthPos, size=math.floor(42*wScale))
         if year:
             ui.text(str(year), xpos=50, ypos=(monthPos + 42 * wScale), size=math.floor(36*wScale))
         if boolEnd:
             if displayTime:
-                ui.text(displayTime, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale), size=math.floor(36*wScale), opacity=0.5)
+                ui.text(displayTime, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale), size=math.floor(36*wScale))
             if displayWeather:
                 ui.text(displayWeather, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 42 * wScale), size=math.floor(24*wScale))
         elif math.fabs(direction) == 1:
-            curX = imgSize + (baseX - posX if direction == -1 else posX - baseX)
+            curX = (150 - (imgSize + (baseX - posX if direction == -1 else posX - baseX))) / 10
+            if curX > 15:
+                curX = 15
+            curX = "%x" % curX
             if displayTime:
-                ui.text(displayTime, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale - curX), size=math.floor(36*wScale), opacity=0.5)
+                ui.text("{color=#fff"+curX+"}"+displayTime+"{/color}", xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 6 * wScale), size=math.floor(36*wScale))
             if displayWeather:
-                ui.text(displayWeather, xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 42 * wScale - curX), size=math.floor(24*wScale))
+                ui.text("{color=#fff"+curX+"}"+displayWeather+"{/color}", xpos=(size[0] - imgSize*wScale), ypos=(monthPos + 42 * wScale), size=math.floor(24*wScale))
         for i in xrange(-3, 7): #Display 7 days, starting 3 days ago
             relDay = getRelativeDay(i, boolStart)
             fWidth = 7 if relDay < 10 else 3
@@ -333,6 +350,7 @@ label calendar:
         size = (config.screen_width, config.screen_height)
         monthPos = 25 #Y position (in px) of month label to display
         month -= 1 #So users can set month as 1-12 instead of 0-11
+        oldmonth = month
         newsize = size[1] / 4 #One quarter of window width
         scalesize = int(math.floor(newsize * 2 / 3)) #One sixth of window width
         
@@ -352,12 +370,10 @@ label calendar:
             renpy.jump(label_cont)
 
     python:
-        oldmonth = month
         move(direction)
 
         curmove = 0
         moved = 0
-        monthHalf = False
         speed = imgSize / 30
         curmonth = months[month][0]
         lastMove = False
@@ -370,7 +386,6 @@ label calendar:
             if math.fabs(curmove) >= imgSize:
                 lastMove = True
             #TODO: add animation?
-            month = oldmonth if not monthHalf else month
 
             posX = baseX - curmove
 
@@ -383,10 +398,6 @@ label calendar:
                     move(direction)
                 else:
                     done = True
-                if nextMonth:
-                    monthHalf = False
-                    nextMonth = False
-                    oldmonth = month
 
             renpy.pause(1/60)
 
