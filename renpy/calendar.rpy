@@ -99,13 +99,13 @@ init python:
     ]
 
     days = [
-        ["Sunday", "Sun", 0],
-        ["Monday", "Mon", 1],
-        ["Tuesday", "Tue", 2],
-        ["Wednesday", "Wed", 3],
-        ["Thursday", "Thu", 4],
-        ["Friday", "Fri", 5],
-        ["Saturday", "Sat", 6]
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday"
     ]
 
     dayofmonth = 20 #01-31
@@ -351,7 +351,9 @@ init python:
             nxPos -= (int)(wScale * 40)
             nyPos -= (int)(wScale * 60)
             cDay = getRelativeWeekDay(i, boolStart)
-            ui.text(cDay[0 if displayFullName else 1], xpos=nxPos, ypos=nyPos, size=math.floor(wScale * 18))
+            if not displayFullName:
+                cDay = cDay[0:3]
+            ui.text(cDay, xpos=nxPos, ypos=nyPos, size=math.floor(wScale * 18))
             posX += imgSize
         framepos = (size[0] / 2 - imgSize / 2 - imgSize / 25, posY - 3)
         ui.image(dayFrame, xpos=framepos[0], ypos=framepos[1])
