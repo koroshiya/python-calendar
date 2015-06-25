@@ -253,7 +253,8 @@ transform move_left_align(direction, distance, xPos, yPos):
     linear 1.0 xcenter (xPos + 80 - direction * distance)
 
 transform move_left_align_wait(direction, distance, xPos, yPos, startDelay):
-    yalign (yPos + 80) xcenter (xPos + 80) ycenter (yPos + 80)
+    alpha 0 yalign (yPos + 80) xcenter (xPos + 80) ycenter (yPos + 80)
+    ease 1 alpha 1
     time startDelay + 1
 
 transform fade_in(xPos, yPos): #Fade in a displayable over 1 second at xPos yPos
@@ -280,12 +281,12 @@ image dayButton = "calendar/1280x720/gray.png" #Image representing each week day
 label calendar(toMove):
 
     scene black
-    show calendar_bg
+    show calendar_bg at fade_in(0,0)
 
     python:
         startOriginalDelay = startDelay
         startMonth = month
-        
+
         direction = toMove
         monthPos = 65 #Y position (in px) of month label to display
         monthPosX = 1050
@@ -302,9 +303,9 @@ label calendar(toMove):
 
         dDir = 1 if direction > 0 else -1
 
-    show text "{size=72}{color=#545454CC}"+str(months[month][0])+"{/color}{/size}" as new_month at Position(xpos=monthPosX, ypos=monthPos+62)
+    show text "{size=72}{color=#545454CC}"+str(months[month][0])+"{/color}{/size}" as new_month at fade_in(monthPosX, monthPos+62)
     if year:
-        show text "{size=48}{color=#545454CC}[year]{/color}{/size}" as new_year at Position(xpos=monthPosX+70, ypos=monthPos)
+        show text "{size=48}{color=#545454CC}[year]{/color}{/size}" as new_year at fade_in(monthPosX+70, monthPos)
 
     if startDelay != 0:
         $ showCurrentDays(direction, imgSize, posX, posY, displayFullName, startDelay)
