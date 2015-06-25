@@ -12,45 +12,32 @@
 #  dayofweek
 #  dayofmonth
 #  month
-#  direction
-#  label_cont
 #
 #The first three variables specify the day of the week (eg. Sunday),
 #the day of the month (eg. the 1st) and the current month (eg. January).
-#
-#direction specifies the number of days forward or backward you want
-#to move. eg. A direction of 1 means move to the next day, a direction of -1
-#goes to the previous day, a direction of 7 will go forward one week, etc.
-#
-#label_cont specifies the label you want to move to after showing the
-#day transition. eg. If I set label_cont to "chapter_01", I would move to
-#that label after the transition ended.
 #
 #There are several other settings you can tweak as well. For example,
 #the intDelay variable. This determines how long in seconds the calendar
 #will display for after finishing the animation.
 #
-#After you've overridden the desired variables, and set the time, label &
-#direction, you're ready to show the calendar. Simply use the jump command
-#to jump to the calendar label. The animation will run, it will wait intDelay
-#seconds, then jump to the label_cont label.
+#After you've overridden the desired variables and set the start time/date,
+#you're ready to show the calendar. Simply use the call command
+#to invoke the calendar label. The animation will run, it will wait intDelay
+#seconds, then continue with the game.
 #
 #A full example of the calendar being used is shown below.
 #This entails a very basic script.rpy file.
-#We start at the start label, set the date to Monday January 1st,
-#set direction and label_cont. We then jump to calendar, which
-#moves us forward 2 days to Wednesday January 3rd, which then
-#jumps to chapter_01 and displays a message before ending.
+#We start at the start label and set the date to Monday January 1st.
+#We then call calendar, which moves us forward 2 days to Wednesday
+#January 3rd, then display a message before ending.
 #
 #label start:
 #    $ dayofweek = 1
 #    $ dayofmonth = 1
 #    $ month = 1
-#    $ direction = 2
-#    $ label_cont = "chapter_01"
-#    jump calendar
 #
-#label chapter_01
+#    call calendar(2)
+#
 #    "The day transition has just ended."
 #
 ########
@@ -290,12 +277,13 @@ transform swipe_in(xPos, yPos):
 image calendar_bg = "calendar/1280x720/bg.png" #Background image
 image dayButton = "calendar/1280x720/gray.png" #Image representing each week day
 
-label calendar:
+label calendar(toMove):
 
     scene black
     show calendar_bg
 
     python:
+        direction = toMove
         monthPos = 65 #Y position (in px) of month label to display
         monthPosX = 1050
         month -= 1 #So users can set month as 1-12 instead of 0-11
@@ -379,4 +367,5 @@ label calendar:
 
     pause intDelay
     scene black with dissolve
-    $ renpy.jump(label_cont)
+
+    return
