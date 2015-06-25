@@ -285,7 +285,6 @@ label calendar(toMove):
 
     python:
         startOriginalDelay = startDelay
-        startMonth = month
 
         direction = toMove
         monthPos = 65 #Y position (in px) of month label to display
@@ -374,6 +373,6 @@ label calendar(toMove):
 
     python:
      startDelay = startOriginalDelay
-     month = startMonth
+     month += 1
 
     return
