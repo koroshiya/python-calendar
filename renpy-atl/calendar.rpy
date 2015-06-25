@@ -283,6 +283,9 @@ label calendar(toMove):
     show calendar_bg
 
     python:
+        startOriginalDelay = startDelay
+        startMonth = month
+        
         direction = toMove
         monthPos = 65 #Y position (in px) of month label to display
         monthPosX = 1050
@@ -367,5 +370,9 @@ label calendar(toMove):
 
     pause intDelay
     scene black with dissolve
+
+    python:
+     startDelay = startOriginalDelay
+     month = startMonth
 
     return
