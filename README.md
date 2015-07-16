@@ -7,7 +7,7 @@ time transitions using basic animation.<br>
 By adding the relevant resources to a project, a developer can add
 the calendar's functionality to their own game.<br>
 eg. Someone writing a Ren'Py Visual Novel could easily integrate the
-resources in the renpy folder, then call the required function to graphically
+resources in the renpy-atl folder, then call the required function to graphically
 express the transition from one day to the next between scenes/labels.<br>
 <br>
 There are currently 2 supported engines: Ren'Py and PyGame.<br>
@@ -40,11 +40,20 @@ Also worthy of note is the fact that the code for the PyGame module is currently
 Thorough instructions are included in the calendar.rpy file, but basically:
 <ul>
 	<li>Copy the files from the renpy directory into your project's game folder</li>
-	<li>When you want to invoke the calendar for the first time, set the dayofweek, dayofmonth, month, direction and label_cont variables</li>
-	<li>Jump to "calendar"</li>
+	<li>
+	When you want to invoke the calendar for the first time, set the relevant variables.<br>
+	In old versions, these are: dayofweek, dayofmonth, month, direction and label_cont.<br>
+	In 6.99, there's just the one variable: calDate.
+	</li>
+	<li>Call or Jump to "calendar", depending on the version used</li>
 </ul>
-and that's it. For a more in-depth explanation, as well as a list of the different settings available, please read the comments within the calendar.rpy file.
+and that's it. For a more in-depth explanation, as well as a list of the different settings available, please read the comments within the relevant calendar.rpy file.
 <h4>PyGame</h4>
 At this point in time, PyGame can't just be dragged and dropped into a project.<br>
 Instead, the PyGame module is currently a standalone demo.<br>
 Simply run the Start.py file and use the left and right arrows to back and forward between days. You can change the values in self.move(int) within moveLeft() and moveRight() to change how many days forward or backward keystrokes will take you.
+<br>
+<h3>Which Renpy calendar version to use</h3>
+<br>
+In general, you should use whatever version is the newest.<br>
+At the time of writing, renpy-6.99 is the most recent version, and is compatible with Renpy version 6.99 and later. If you are running an older version of Renpy, you should update and use this version.<br>
