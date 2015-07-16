@@ -63,9 +63,9 @@ default calDate = datetime.datetime(2001, 8, 20, 12, 0, 0) #20th August 2001, mi
 #Current month. 1 = January, 12 = December
 default displayYear = False
 default displayFullName = True #True = full name (Monday), False = abbreviation (Mon)
-default displayTime = False #If False, don't display. Otherwise display value.
+default displayTime = False
 default displayWeather = False #If False, don't display. Otherwise display value.
-default startDelay = 1.0 #Time to wait before beginning the calendar animation.
+default startDelay = 2.0 #Time to wait before beginning the calendar animation.
 default intDelay = 2.0 #Time for which to keep showing calendar after animation.
 
 init python:
@@ -103,10 +103,6 @@ init python:
         day = calDate + datetime.timedelta(days=mv)
         day = day.weekday()
         return calendar.day_name[day] if displayFullName else calendar.day_abbr[day]
-
-    def getMonthDays(month):
-        global calDate
-        return calendar.monthrange(calDate.year, month)[1]
 
     ###
     #move(int direction)
@@ -186,9 +182,9 @@ label calendar(direction):
         $ direction -= dDir
 
     if displayTime:
-        show screen CalendarTime
+        show screen CalendarTime(calDate.hour, calDate.minute, calDate.second)
     if displayWeather:
-        show screen CalendarWeather
+        show screen CalendarWeather(displayWeather)
     
     pause intDelay
     $ print "hiding showCurrentDays"
@@ -268,11 +264,11 @@ screen CalendarMonth(mon):
 screen CalendarYear(yr):
     text yr size 48 color "#545454CC" at fade_in(1050, 20)
 
-screen CalendarTime:
-    text displayTime size 48 color "#545454CC" at fade_in(700, 6)
+screen CalendarTime(hour, minute, second):
+    text format(hour, '02')+":"+format(minute, '02') size 48 color "#545454CC" at fade_in(700, 30)
 
-screen CalendarWeather:
-    text displayWeather size 42 color "#545454CC" at fade_in(700, 52)
+screen CalendarWeather(weather):
+    text weather size 42 color "#545454CC" at fade_in(700, 76)
 
 ###
 #Transforms
