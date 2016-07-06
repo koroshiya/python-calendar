@@ -27,7 +27,7 @@
 #January 3rd.
 #
 #label start:
-#    $ calDate.replace(second=10, hour=12, minute=30, day=1, month=1, year=2014)
+#    $ calDate = calDate.replace(second=10, hour=12, minute=30, day=1, month=1, year=2014)
 #
 #    call calendar(2)
 #
